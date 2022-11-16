@@ -17,10 +17,10 @@ if [ "$1" ]; then
     echo "* $comment" >> dist/$DCCVER.txt
   done
 fi
-# gh release delete "$DCCVER" -y
-# git push --delete origin "refs/tags/$DCCVER"
-# git tag --delete "$DCCVER"
-# gh release create -F dist/$DCCVER.txt "$DCCVER" dist/$DCCVER.*.tgz dist/$DCCVER.md5
+gh release delete "$DCCVER" -y
+git push --delete origin "refs/tags/$DCCVER"
+git tag --delete "$DCCVER"
+gh release create -F dist/$DCCVER.txt "$DCCVER" dist/$DCCVER.*.tgz dist/$DCCVER.md5
 for a in dist/$DCCVER.*.tgz; do
   a1=`basename $a`
   rclone copyto $a cptac-s3:cptac-cdap.georgetown.edu/$a1
