@@ -40,6 +40,19 @@ rows = list(csv.reader(open(sys.argv[1]),dialect='excel-tab'))
 headers = rows[0]
 rows = rows[1:]
 
+if 'AnalyticalSampleIndex' not in headers:
+    asampord = 1
+    asamporddict = {}
+    for i,r in enumerate(rows):
+        d = dict(list(zip(headers,r)))
+        if d.get('AnalyticalSample') != None:
+            asamp = r.get('AnalyticalSample')
+            if asamp not in asamporddict:
+                asamporddict[asamp] = asampord
+                asampord += 1
+            r.append(asamporddict[asamp])
+    headers.append('AnalyticalSampleIndex')
+
 # Files to analyze
 anyratios = False
 out = []
@@ -100,8 +113,10 @@ for l in sorted(sys.stdin):
                 alltags.sort(key=sortkey)
             if d.get('AnalyticalSample'):
                 asamp = d.get('AnalyticalSample')
+                asampord = int(d.get('AnalyticalSampleIndex'))
             else:
                 asamp = tuple([d.get(tag.split('-')[1]) for tag in alltags])
+                asampord = 0
             if d.get('Fraction'):
                 fraction = d.get('Fraction')
             else:
@@ -116,7 +131,7 @@ for l in sorted(sys.stdin):
                     pass
             for j,tag in enumerate(alltags):
                 k = tag.split('-')[1]
-                row = [basename,asamp,fraction,tag,d[k]]
+                row = [basename,asamp,asampord,fraction,tag,d[k]]
                 if labellot:
                     percs = labels[labellot][k]
                     simplecount = 0
@@ -174,8 +189,8 @@ for s in freq:
         for asamp,tag in freq[s]:
             sampmap[(asamp,tag)] = s
 
-out.sort(key=lambda t: (t[1],intstrkey(t[2]),t[0],sortkey(t[3])))
-headers = ["spectrafile","analyticalsample","fraction"]
+out.sort(key=lambda t: (t[2],t[1],intstrkey(t[3]),t[0],sortkey(t[4])))
+headers = ["spectrafile","analyticalsample","analyticalsampleordinal","fraction"]
 if len(alltags) > 1:
     headers.extend(["label","sample"])
 else:

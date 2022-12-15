@@ -294,6 +294,7 @@ denominators = defaultdict(list)
 sfid2corrmat = dict()
 for sf in psmdb.spectrumfiles():
     asname = sf.getdata('analyticalsample')
+    asord = sf.getdata('analyticalsampleordinal',0)
     if not asname:
         asname = ":".join(sf.sample_names())
     corrections = np.zeros(shape=(len(labelnames),9))
@@ -318,7 +319,7 @@ for sf in psmdb.spectrumfiles():
             rationame[ratio] = ratio
             isratio[ratio] = (denom != "1.0")
             ratios.add(ratio)
-            ratioorder[ratio] = (asname,ordinal)
+            ratioorder[ratio] = (asord,asname,ordinal)
 
         correction = ssfl.getdata('isotope_corrections')
         if correction != None and not opts.nocorrections:

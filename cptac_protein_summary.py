@@ -77,13 +77,16 @@ else:
     unshpepids = psmdb.unshared_peptideids_bygene()
 unshpepids.difference_update(psmdb.grouped_peptideids())
 
+sampidkey = dict()
 sampids = set()
 fileid2sampid = dict()
 for sf in psmdb.spectrumfiles():
     sid = sf.getdata('analyticalsample')
+    sidord = sf.getdata('analyticalsampleordinal',0)
     if not sid:
         sid = ":".join(sf.sample_names())
     sampids.add(sid)
+    sampidkey[sid] = (sidord,sid)
     fileid2sampid[sf.id] = sid
 
 # print sampids
@@ -172,7 +175,7 @@ for pr in proteins:
     progress.update()
 progress.done()
 
-sampids = sorted(sampids)
+sampids = sorted(sampids,key=sampidkey.get)
 
 # headers = ['Gene','GroupID']
 if not opts.bygene:

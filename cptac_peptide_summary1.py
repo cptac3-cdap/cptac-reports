@@ -66,9 +66,11 @@ progress.done()
 fileid2sampid = dict()
 for sf in psmdb.spectrumfiles():
     sid = sf.getdata('analyticalsample')
+    sidord = sf.getdata('analyticalsampleordinal',0)
     if not sid:
         sid = ":".join(sf.sample_names())
     fileid2sampid[sf.id] = sid
+    samplekey[sid] = (sidord,sid)
 
 pep = next(iter(psmdb.peptides()))
 pr = pep.proteins()[0]
@@ -121,7 +123,7 @@ def rows(fileid2sampid):
         row['Charge'] = ';'.join(sorted(map(str,charges)))
         row['Mods'] = ';'.join(sorted(mods))
         row['MinFDR'] = minfdr
-        row['Sample'] = ';'.join(sorted(samples))
+        row['Sample'] = ';'.join(sorted(samples,key=samplekey.get))
         row['SpectralCount'] = len(spectra)
         row['AmbigSpectralCount'] = nties
         if prisgene:

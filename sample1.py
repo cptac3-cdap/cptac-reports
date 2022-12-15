@@ -156,6 +156,8 @@ if opts.samples:
         counts[(sf.id,ri)] += 1
         if r.get('analyticalsample'):
             sf.setdata('analyticalsample',r.get('analyticalsample'))
+        if r.get('analyticalsampleordinal'):
+            sf.setdata('analyticalsampleordinal',int(r.get('analyticalsampleordinal')))
 
     if not opts.remove and not opts.append:
         for sf in psmdb.spectrumfiles():
