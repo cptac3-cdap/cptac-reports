@@ -46,7 +46,7 @@ if 'AnalyticalSampleIndex' not in headers:
     for i,r in enumerate(rows):
         d = dict(list(zip(headers,r)))
         if d.get('AnalyticalSample') != None:
-            asamp = r.get('AnalyticalSample')
+            asamp = d.get('AnalyticalSample')
             if asamp not in asamporddict:
                 asamporddict[asamp] = asampord
                 asampord += 1
