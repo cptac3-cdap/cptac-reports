@@ -201,9 +201,9 @@ if anyratios:
     headers.extend(["denominator"])
 print(",".join(headers))
 for r in out:
-    r[4] = sampmap[(r[1],r[3])]
+    r[5] = sampmap[(r[1],r[4])]
     if len(alltags) == 1:
-        del r[3]
+        del r[4]
     if not isinstance(r[1],str):
         r[1] = ":".join([sampmap[(r[1],t)] for t in alltags])
     print(",".join(map(str,r)))
