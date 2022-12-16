@@ -63,6 +63,7 @@ pepids = set(psmdb.peptideids())
 progress.done()
 
 # sampids = set()
+samplekey = dict()
 fileid2sampid = dict()
 for sf in psmdb.spectrumfiles():
     sid = sf.getdata('analyticalsample')
