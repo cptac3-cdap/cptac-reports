@@ -50,6 +50,6 @@ for p,l in assays.items():
         pep.appenddata('Assay',d['AssayID'])
 
         if not anypr:
-            print >>sys.stderr, "Could not match assay %s on peptide %s to any protein or gene"%(d['AssayID'],p)
+            print("Could not match assay %s on peptide %s to any protein or gene"%(d['AssayID'],p),file=sys.stderr)
 
 trans.commit(close=True)
