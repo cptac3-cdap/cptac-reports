@@ -48,10 +48,12 @@ esac
 
 PROG=`readlink -f "$0"`
 DIR=`dirname "$PROG"`
-# DIR=`dirname $0`
+DIR=`dirname $0`
+RDIR="$DIR"
 EXT=""
 if [ -f "$DIR/loader1.py" ]; then
   EXT=".py"
+  RDIR=$DIR/ProteinResources
 fi
 
 BASE=`basename "$PEPTIDES" .elib.peptides.txt`
@@ -62,13 +64,13 @@ if [ ! -f "$PEPTIDES" ]; then
 fi
 
 if [ "$SPECIES" = "Human" ]; then
-  UNIPROT="$DIR/ProteinDatabases/uniprot_human_reference_isoforms_20180717.fasta"
-  REFSEQ="$DIR/ProteinDatabases/refseq_human_20180717.fasta"
-  GENEMAP="$DIR/ProteinMapping/prhuman2gene-2019-01-22.csv"
+  UNIPROT="$RDIR/ProteinDatabases/uniprot_human_reference_isoforms_20180717.fasta"
+  REFSEQ="$RDIR/ProteinDatabases/refseq_human_20180717.fasta"
+  GENEMAP="$RDIR/ProteinMapping/prhuman2gene-2019-01-22.csv"
 elif [ "$SPECIES" = "Mouse" ]; then
-  UNIPROT="$DIR/ProteinDatabases/uniprot_mouse_reference_isoforms_20180717.fasta"
-  REFSEQ="$DIR/ProteinDatabases/refseq_mouse_20180717.fasta"
-  GENEMAP="$DIR/ProteinMapping/prmouse2gene-2019-01-22.csv"
+  UNIPROT="$RDIR/ProteinDatabases/uniprot_mouse_reference_isoforms_20180717.fasta"
+  REFSEQ="$RDIR/ProteinDatabases/refseq_mouse_20180717.fasta"
+  GENEMAP="$RDIR/ProteinMapping/prmouse2gene-2019-01-22.csv"
 fi
 
 rm -f ${BASE}*.psm ${BASE}.*.pars.*

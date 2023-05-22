@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python3
 
 from . find_elementtree import ET
 

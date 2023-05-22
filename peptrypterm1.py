@@ -1,4 +1,4 @@
-#!/usr/bin/env python27
+#!/usr/bin/env python3
 
 import sys, os, os.path, copy, re, math, gzip, bz2
 from collections import defaultdict

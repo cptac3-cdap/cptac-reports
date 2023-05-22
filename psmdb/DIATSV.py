@@ -1,10 +1,11 @@
-#!/bin/env python
+#!/usr/bin/env python3
 
 import re, math, csv
 import sys
 from .SearchResult import *
 from .fopen import *
 from .Scan import Scan
+import codecs
 
 class DIATSVReader:
     hmass = 1.007825040
@@ -20,7 +21,7 @@ class DIATSVReader:
             if self.handle:
                 self.handle.close()
                 self.handle = None
-            self.handle = fopen(self.f,'r')
+            self.handle = codecs.getreader("utf-8")(fopen(self.f,'r'))
         self.any = False
 
     def __iter__(self):
