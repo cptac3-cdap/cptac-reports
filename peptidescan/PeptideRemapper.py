@@ -400,6 +400,32 @@ class SGDAcc(RegExAcc):
     urlrex = re.compile(r'^(?P<acc>[A-Z0-9]+) (?P<gene>\w+) SGDID:(S\d+) .* "(.*)"$')
     urltmpl = 'http://www.yeastgenome.org/cgi-bin/locus.fpl?locus=%(acc)s'
 
+class GencodeENSP(RegExAcc):
+    name = 'GencodeENSP'
+    accrex = re.compile(r'^(ENS(MUS)?P\d+(\.\d+)?)\|')
+    accgrp = 1
+    dscrex = None
+    dscgrp = None
+    shacc = re.compile(r'^(.*)\.\d+$')
+    def shortacc(self,acc):
+        m = GencodeENSP.shacc.search(acc)
+        if m:
+            return m.group(1)
+        return None
+    def org(self,defline):
+        if defline.startswith('ENSP'):
+            return 'Homo sapiens'
+        elif defline.startsiwth('ENSMUSP'):
+            return 'Mus musculus'
+        return None
+
+class CPTAC4Contaminant(RegExAcc):
+    name = 'CPTAC4Contaminant'
+    accrex = re.compile(r'^Cont\|(\S*)\s+')
+    accgrp = 1
+    dscrex = re.compile(r'^Cont\|(\S*)\s+?(.*)$')
+    dscgrp = 2
+
 class UCSCKGAcc(FirstWord):
     noauto = True
     name = 'UCSCKGAcc'
@@ -495,6 +521,9 @@ class RefSeqUniProtIsoform(MultiAcc):
 class RefSeqUniProtIsoformBroadArtifact(MultiAcc):
     name = 'RefSeqUniProtIsoformBroadArtifact'
     classes = [ RefSeqAcc, UniProtIsoformAcc, BroadArtifact ]
+class GencodeENSPRefSeqUniProtIsoformCPTAC4Contaminant(MultiAcc):
+    name = 'GencodeENSPRefSeqUniProtIsoformCPTAC4Contaminant'
+    classes = [ GencodeENSP, RefSeqAcc, UniProtIsoformAcc, CPTAC4Contaminant ]
 
 class UniProtIsoformDecoy(MultiAcc):
     name = 'UniProtIsoform+Decoy'
@@ -521,13 +550,14 @@ class OrthoRefSeqUniProtIsoformBroadArtifact(RefSeqUniProtIsoformBroadArtifact):
 AccessionRuleClasses = [ FirstWord,
                          IPIShortAcc, UniProtIsoformAcc, RefSeqAcc, SGDAcc,
                          UniProtAcc, UniProtID, RefSeqGI,
-                         IPIGene, UniProtGene,
+                         IPIGene, UniProtGene, GencodeENSP,
                          UCSCKGAcc, Gene, OrthoGene,
                          UniProtIsoformRefSeq,
                          UniProtRefSeq,
                          RefSeqUniProt,
                          RefSeqUniProtIsoform,
                          RefSeqUniProtIsoformBroadArtifact,
+                         GencodeENSPRefSeqUniProtIsoformCPTAC4Contaminant,
                          OrthoRefSeqUniProtIsoform,
                          OrthoRefSeqUniProtIsoformBroadArtifact,
                          SecondAccFirstWord,
@@ -592,8 +622,9 @@ class PeptideRemapper:
                 pepidmap = dict((p,i) for i,p in self.protdb.get_peptides(count=self.blocksize,offset=offset))
                 # print '\n'.join(pepidmap.keys()[:20])
                 for r in pscmd.run(list(pepidmap.keys()),**kwargs):
-                    # print >>sys.stderr, r
+                    # print(r,file=sys.stderr)
                     pracc,prdesc = self.accfn(r.seqdescr)
+                    # print(pracc,prdesc,file=sys.stderr)
                     if not pracc:
                         continue
                     if len(r.substitutions) > 1:

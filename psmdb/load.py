@@ -192,32 +192,33 @@ def SearchResultLoad(f,psmfilter,noprotein=False,accrule=None,reload=False,analy
                         if prdesc != None:
                             prmd['defline'] = prdefline
                             prmd['description'] = prdesc
-                            pracc = ruleacc
-                            shacc = None
-                            url = None
-                            gene = None
-                            entry = None
-                            org = None
-                            if prdefline:
-                                shacc = accrule.shortacc(ruleacc)
-                                url = accrule.url(prdefline)
-                                gene = accrule.gene(prdefline)
-                                entry = accrule.entry(prdefline)
-                                org = accrule.org(prdefline)
-                                if shacc:
-                                    prmd['short_accession'] = shacc
-                                if url:
-                                    prmd['url'] = url
-                                if org:
-                                    prmd['organism'] = org
-                                if gene:
-                                    prmd['gene'] = gene
-                                if entry:
-                                    prmd['entry'] = entry
                         else:
-                            prmd['description'] = prdefline
+                            prmd['defline'] = prdefline
+                        pracc = ruleacc
+                        shacc = None
+                        url = None
+                        gene = None
+                        entry = None
+                        org = None
+                        if prdefline:
+                            shacc = accrule.shortacc(ruleacc)
+                            url = accrule.url(prdefline)
+                            gene = accrule.gene(prdefline)
+                            entry = accrule.entry(prdefline)
+                            org = accrule.org(prdefline)
+                            if shacc:
+                                prmd['short_accession'] = shacc
+                            if url:
+                                prmd['url'] = url
+                            if org:
+                                prmd['organism'] = org
+                            if gene:
+                                prmd['gene'] = gene
+                            if entry:
+                                prmd['entry'] = entry
                     else:
                         prmd = {}
+                        prmd['defline'] = prdefline
                         prmd['description'] = prdesc
                     if prorg and 'organism' not in prmd:
                         prmd['organism'] = prorg
