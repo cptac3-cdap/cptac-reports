@@ -418,6 +418,38 @@ class GencodeENSP(RegExAcc):
         elif defline.startsiwth('ENSMUSP'):
             return 'Mus musculus'
         return None
+    @staticmethod
+    def prefer(pr1,pr2):
+        pr1id,pr1defline = pr1
+        pr2id,pr2defline = pr2
+        if pr1defline == pr2defline:
+            return cmp(pr1id,pr2id)
+        # print pr1,pr2,
+        m1 = GencodeENSP.accrex.search(pr1defline.lstrip('>'))
+        m2 = GencodeENSP.accrex.search(pr2defline.lstrip('>'))
+        if not m1:
+            pr1acc = "";
+        else:
+            pr1acc = m1.group(GencodeENSP.accgrp);
+        if not m2:
+            pr2acc = "";
+        else:
+            pr2acc = m2.group(GencodeENSP.accgrp);
+        if pr1acc == "" or pr2acc == "":
+            if pr1acc != pr2acc:
+                return cmp(1*(pr1acc == ""),1*(pr2acc == ""))
+            return cmp(db1id,db2id)
+        dashcnt1 = pr1defline.split('|').count('-')
+        dashcnt2 = pr2defline.split('|').count('-')
+        if dashcnt1 != dashcnt2:
+            return cmp(dashcnt1,dashcnt2)
+        gn1 = pr1defline.split('|')[6]
+        gn2 = pr2defline.split('|')[6]
+        for badword in "orf -".split():
+            c = cmp(1*(badword in gn1), 1*(badword in gn2))
+            if c != 0:
+                return c
+        return cmp(pr1id,pr2id)
 
 class CPTAC4Contaminant(RegExAcc):
     name = 'CPTAC4Contaminant'
@@ -529,6 +561,15 @@ class UniProtIsoformDecoy(MultiAcc):
     name = 'UniProtIsoform+Decoy'
     classes = [ UniProtIsoformAcc, FirstWord ]
 
+class OrthoGencodeENSP(GencodeENSP):
+    noauto = True
+    name = 'OrthoGencodeENSP'
+    def prefer(self,pr1,pr2):
+        c = cmp(('; ENS' in pr1[1])*1,('; ENS' in pr2[1])*1)
+        if c != 0:
+            return -c
+        return OrthoGencodeENSP.prefer(self,pr1,pr2)
+
 class OrthoRefSeqUniProtIsoform(RefSeqUniProtIsoform):
     noauto = True
     name = 'OrthoRefSeqUniProtIsoform'
@@ -558,6 +599,7 @@ AccessionRuleClasses = [ FirstWord,
                          RefSeqUniProtIsoform,
                          RefSeqUniProtIsoformBroadArtifact,
                          GencodeENSPRefSeqUniProtIsoformCPTAC4Contaminant,
+                         OrthoGencodeENSP,
                          OrthoRefSeqUniProtIsoform,
                          OrthoRefSeqUniProtIsoformBroadArtifact,
                          SecondAccFirstWord,
