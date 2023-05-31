@@ -568,7 +568,7 @@ class OrthoGencodeENSP(GencodeENSP):
         c = cmp(('; ENS' in pr1[1])*1,('; ENS' in pr2[1])*1)
         if c != 0:
             return -c
-        return OrthoGencodeENSP.prefer(self,pr1,pr2)
+        return GencodeENSP.prefer(self,pr1,pr2)
 
 class OrthoRefSeqUniProtIsoform(RefSeqUniProtIsoform):
     noauto = True
