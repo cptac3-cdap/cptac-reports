@@ -196,10 +196,11 @@ headers.extend(["Spectral Counts",
 headers.append('NCBIGeneID')
 headers.append('Authority')
 
-pr = next(iter(proteins))
 for key in ('description','organism','chromosome','locus'):
-    if pr.hasdata(key):
-        headers.append(key.title())
+    for pr in proteins:
+        if pr.hasdata(key):
+            headers.append(key.title())
+            break
 if opts.bygene:
     headers.append('Proteins')
 headers.append('Assays')

@@ -150,10 +150,11 @@ for s in sampids:
 headers.append('NCBIGeneID')
 headers.append('Authority')
 
-pr = next(iter(proteins))
 for key in ('description','organism','chromosome','locus'):
-    if pr.hasdata(key):
-        headers.append(key.title())
+    for pr in proteins:
+        if pr.hasdata(key):
+            headers.append(key.title())
+            break
 
 acckey = 'accession'
 if opts.bygene:

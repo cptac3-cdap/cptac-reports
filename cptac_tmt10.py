@@ -450,23 +450,30 @@ def ratio2header(s):
         return [(rationame[s]+" Summed Intensity"),(rationame[s]+" Unshared Summed Intensity")]
     return [(rationame[s]+" Log Ratio"),(rationame[s]+" Unshared Log Ratio")]
 
-pr = next(iter(proteins))
 acchdr='Protein'
 acckey='accession'
-if pr.hasdata('geneid') or opts.bygene:
-    if opts.bygene:
-        acckey = 'name'
-    acchdr='Gene'
+if opts.bygene:
+    acckey = 'name'
+for pr in proteins:
+    if pr.hasdata('geneid') or opts.bygene:
+        acchdr='Gene'
+        break
 headers = [acchdr]
 for s in ratios:
     headers.extend(ratio2header(s))
-if pr.hasdata('geneid'):
-    headers.append('NCBIGeneID')
-if pr.hasdata('hgncid') or pr.hasdata('authid'):
-    headers.append('Authority')
+for pr in proteins:
+    if pr.hasdata('geneid'):
+        headers.append('NCBIGeneID')
+        break
+for pr in proteins:
+    if pr.hasdata('hgncid') or pr.hasdata('authid'):
+        headers.append('Authority')
+        break
 for key in ('description','organism','chromosome','locus','source'):
-    if pr.hasdata(key):
-        headers.append(key.title())
+    for pr in proteins:
+        if pr.hasdata(key):
+            headers.append(key.title())
+            break
 # headers.insert(len(headers)-1,'Gene')
 
 def rows(ratios,proteins):
