@@ -719,27 +719,29 @@ for pr in parsimony:
                     fp.proteinprob[tbpr]=fp.proteinprob[pr]
                     del fp.proteinprob[pr]
         else:
-            preference = sorted([(pri,accfn(pri)) for pri in tbequiv],key=cmp_to_key(accrule.prefer))
-            if min(list(map(itemgetter(0),preference))) != preference[0][0]:
-                for i,(pri,desc) in enumerate(preference):
-                    print(i,pri,desc)
-                print()
+            # preference = sorted([(pri,accfn(pri)) for pri in tbequiv],key=cmp_to_key(accrule.prefer))
+            # if min(list(map(itemgetter(0),preference))) != preference[0][0]:
+            #    for i,(pri,desc) in enumerate(preference):
+            #        print(i,pri,desc)
+            #     print()
+            # 
+            # for i1,pri in enumerate(sorted(tbequiv,key=prsortkey.get)):
+            #     print(i1,pri,prsortkey.get(pri),accfn(pri))
+            # print()
 
-            for i1,pri in enumerate(sorted(tbequiv,key=prsortkey.get)):
-                print(i1,pri,prsortkey.get(pri),accfn(pri))
-            print()
-
-            tbequiv = list(tbequiv)
-            for i1 in range(len(tbequiv)):
-                for i2 in range(i1+1,len(tbequiv)):
-                    print(tbequiv[i1],tbequiv[i2],prsortkey.get(tbequiv[i1]),prsortkey.get(tbequiv[i2]),\
-                          accrule.prefer((tbequiv[i1],accfn(tbequiv[i1])),(tbequiv[i2],accfn(tbequiv[i2]))))
+            # tbequiv = list(tbequiv)
+            # for i1 in range(len(tbequiv)):
+            #     for i2 in range(i1+1,len(tbequiv)):
+            #         print(tbequiv[i1],tbequiv[i2],prsortkey.get(tbequiv[i1]),prsortkey.get(tbequiv[i2]),\
+            #               accrule.prefer((tbequiv[i1],accfn(tbequiv[i1])),(tbequiv[i2],accfn(tbequiv[i2]))))
 
             preferred = sorted([(pri,accfn(pri)) for pri in tbequiv],key=cmp_to_key(accrule.prefer))[0][0]
             newpars.add(preferred)
             # assert(preferred == pr)
             if preferred != pr:
-                print("switch! %d in %d out"%(preferred,pr))
+                print("tb equiv switch! %d in %d out"%(preferred,pr))
+                for i1,(pri,desc) in sorted([(pri,accfn(pri)) for pri in tbequiv],key=cmp_to_key(accrule.prefer)):
+                     print(i1+1,pri,prsortkey.get(pri),desc,('+' if preferred == pri else ('-' if pr == pri else "")))
                 dom.equivalentto[preferred] = dom.equivalentto[pr]
                 dom.containedby[preferred] = dom.containedby[pr]
                 del dom.equivalentto[pr]
