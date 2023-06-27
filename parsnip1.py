@@ -740,7 +740,7 @@ for pr in parsimony:
             # assert(preferred == pr)
             if preferred != pr:
                 print("tb equiv switch! %d in %d out"%(preferred,pr))
-                for i1,(pri,desc) in sorted([(pri,accfn(pri)) for pri in tbequiv],key=cmp_to_key(accrule.prefer)):
+                for i1,(pri,desc) in enumerate(sorted([(pri,accfn(pri)) for pri in tbequiv],key=cmp_to_key(accrule.prefer))):
                      print(i1+1,pri,prsortkey.get(pri),desc,('+' if preferred == pri else ('-' if pr == pri else "")))
                 dom.equivalentto[preferred] = dom.equivalentto[pr]
                 dom.containedby[preferred] = dom.containedby[pr]
