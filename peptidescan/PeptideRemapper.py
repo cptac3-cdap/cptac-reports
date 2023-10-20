@@ -415,7 +415,7 @@ class GencodeENSP(RegExAcc):
     def org(self,defline):
         if defline.startswith('ENSP'):
             return 'Homo sapiens'
-        elif defline.startsiwth('ENSMUSP'):
+        elif defline.startswith('ENSMUSP'):
             return 'Mus musculus'
         return None
     @staticmethod
