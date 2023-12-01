@@ -917,8 +917,8 @@ def rows(ratios,logratioitems):
                     modpep = ion.annotatedPeptide(modmap3,before=True)
                     modpep = modpep.replace('uK','k')
                 for al in ion.peptide.alignmentsto(pr,loci=prosites):
-                    if opts.specific:
-                        assert (al.getdata('tryptic-termini',None) == 'specific')
+                    if opts.specific and al.getdata('tryptic-termini',None) != 'specific':
+                        continue
                     if opts.report == 'GlycositeCombination':
                         if al.hasdata('right-context'):
                             modpep1 = modpep + al.getdata('right-context')
