@@ -227,6 +227,10 @@ class MZIdentMLReader:
         if m:
             # scan = '.'.join(map(str,[m.group(1),m.group(2),m.group(3)]))
             scan = int(m.group(3))
+        m = re.search(r'^sample=(\d+) period=(\d+) cycle=(\d+) experiment=(\d+)$',specid)
+        if m:
+            # scan = '.'.join(map(str,[m.group(1),m.group(2),m.group(3)]))
+            scan = int(m.group(3))*1000+int(m.group(4))
         # Put the others here...
         for cvelt in ele.findall(self.ns+'cvParam'):
             if cvelt.attrib['accession'] == 'MS:1000796' or \
