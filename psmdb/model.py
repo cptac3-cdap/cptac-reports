@@ -23,6 +23,8 @@ defaults = dict(memory=False,
                 threadConnection=True,
                 debug=False)
 
+quiet = False
+
 def getopts(opts,kw):
     d = dict()
     for k in list(defaults.keys()):
@@ -120,7 +122,7 @@ def memoize(key=None,precache=None,maxprecache=10000000,idstr="",reportinterval=
                     # if idstr:
                     #     print >>sys.stderr, "%sPrecaching..."%(idstr + ": ",)
                     thecache.update(precache(kw.get('connection'),maxprecache))
-                    if idstr:
+                    if idstr and not quiet:
                         print("%sCached %d entries"%(idstr + ": ",len(thecache)-2), file=sys.stderr)
             if key != None:
                 _key = key(args,kw)
@@ -134,7 +136,7 @@ def memoize(key=None,precache=None,maxprecache=10000000,idstr="",reportinterval=
                 # if len(thecache) > maxsize:
                 #     thecache.clear()
                 thecache[_key] = f(*args,**kw)
-            if idstr and thecache['_calls'] % reportinterval == 0:
+            if idstr and not quiet and thecache['_calls'] % reportinterval == 0:
                 print("%sMiss ratio: %.2f%% (calls: %d, misses: %d, cache size: %d)"%(idstr + ": ",100.0*float(thecache['_misses'])/thecache['_calls'],thecache['_calls'],thecache['_misses'],len(thecache)-2), file=sys.stderr)
             return thecache[_key]
         return decorated_function

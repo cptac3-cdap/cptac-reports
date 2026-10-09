@@ -320,10 +320,9 @@ class MZIdentMLReader:
                 if val != "" and val != None:
                     psm.set(sname, val)
                     params.append(sname)
-            if psm.has('MS-GF:SpecEValue'):
-                psm.set('eval',psm.get('MS-GF:SpecEValue'))
-                params.append('eval')
-                ranking_key = 'eval'
+            if psm.has('MS-GF:PepQValue'):
+                psm.set('pepfdr',psm.get('MS-GF:PepQValue'))
+                params.append('pepfdr')
             if psm.has('IDPicker:MinQValue'):
                 psm.set('estfdr',psm.get('IDPicker:MinQValue'))
                 params.append('estfdr')
@@ -332,9 +331,10 @@ class MZIdentMLReader:
                 psm.set('estfdr',psm.get('MS-GF:QValue'))
                 params.append('estfdr')
                 ranking_key = 'estfdr'
-            if psm.has('MS-GF:PepQValue'):
-                psm.set('pepfdr',psm.get('MS-GF:PepQValue'))
-                params.append('pepfdr')
+            if psm.has('MS-GF:SpecEValue'):
+                psm.set('eval',psm.get('MS-GF:SpecEValue'))
+                params.append('eval')
+                ranking_key = 'eval'
             if ranking_key == 'eval':
                 rankingvalues.add("%.5e"%psm.get('eval'))
                 psm.set('trank',len(rankingvalues))

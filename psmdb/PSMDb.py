@@ -5,6 +5,7 @@ from collections import defaultdict
 import os, os.path, sys, re
 from operator import attrgetter, itemgetter
 import itertools
+import base64, pickle
 
 from peptidescan.PeptideRemapper import PeptideRemapper
 
@@ -28,6 +29,7 @@ class PSMDb:
                 pass
 
         self.conn,self.filename = model.init(**kw)
+        model.quiet = self.quiet
 
         self.todelete = []
 
@@ -1143,6 +1145,18 @@ class PSMDb:
 
     def peptideid_psmcounts(self):
         return model.PeptidePSMCounts.counts1(connection=self.conn)
+
+    def peptideid_minpsmrank(self,rankkey='rank'):
+        q = self.conn.sqlrepr(Select([model.PeptideIon.q.peptideID,
+                                      model.PeptideSpectrumMatch.q.metadata],
+                                      model.PeptideSpectrumMatch.j.peptideIon))
+        d = defaultdict(set)
+        for r in self.conn.queryAll(q):
+            d[r[0]].add(pickle.loads(base64.b64decode(r[1]))[rankkey])
+        r = defaultdict(lambda: 1e+20)
+        for k,v in d.items():
+            r[k] = min(v)
+        return r
 
     def peptideid_psmminvalue0(self):
         if model.PeptidePSMMinValue.empty(connection=self.conn):

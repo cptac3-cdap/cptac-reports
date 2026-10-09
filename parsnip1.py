@@ -28,7 +28,7 @@ else:
     parser = OptionParser(version=VERSION)
     error_kwargs = {}
 
-from psmdb.filter import SpectralFDR,PeptideFDR,PeptideProphet,EValue
+from psmdb.filter import SpectralFDR,PeptideFDR,PeptideProphet,EValue,Rank,TiedRank
 from psmdb.PSMDb import PSMDb
 
 psmmetric_choices = ["Estimated PSM FDR % (PepArML)",
@@ -59,6 +59,14 @@ parser.add_option("-T","--maxfdr",type="float",dest="maxfdr",default=None,
 parser.add_option("-C","--minspeccount",type="int",dest="minspeccount",default=1,
                   help="Consider only peptides with spectral counts at least this threshold. Default: No constraint.",remember=True,
                   name="Min. Spec. Count")
+
+parser.add_option("-r","--rank",type="int",dest="rank",default=None,
+                  help="Use peptide identifications with this rank or better. Default: No constraint.",remember=True,
+                  name="PSM Rank")
+
+parser.add_option("--tiedrank",type="int",dest="tiedrank",default=None,
+                  help="Use peptide identifications with this tied rank or better. Default: No constraint.",remember=True,
+                  name="PSM Tied Rank")
 
 parsimony.add_option("--parsimony",type="choice",dest="parsimonychoice",default='Parsimony',remember=True,
                   help="Parsimony strategy for eliminating redundant proteins. One of Parsimony, FixedPoint, None. Default: Parsimony",
@@ -232,6 +240,9 @@ if opts.psmthresh != None:
             print("PSMs already filtered more stringently than requested. Input PSMs filtered at: %s"%(a.getdata('Threshold'),), file=sys.stderr)
             sys.exit(1)
 
+if opts.rank != None or opts.tiedrank != None:
+    needclone = True
+
 if opts.peptidegroups:
     needpg = True
     needclone = True
@@ -352,6 +363,12 @@ pep2psmcount =  psmdb.peptideid_psmcounts()
 progress.done()
 progress.stage("Peptides2FDR")
 pep2fdr = psmdb.peptideid_psmminvalue()
+pep2rank = None
+if opts.rank:
+    pep2rank = psmdb.peptideid_minpsmrank()
+pep2trank = None
+if opts.tiedrank:
+    pep2trank = psmdb.peptideid_minpsmrank(rankkey='trank')
 progress.done()
 if opts.peptidegroups:
     progress.stage("PeptideGroups2PSMCount")
@@ -360,6 +377,8 @@ if opts.peptidegroups:
     progress.stage("PeptideGroups2FDR")
     pepgrp2fdr = psmdb.peptidegroupid_psmminvalue(pgtype)
     progress.done()
+    pepgrp2rank = None
+    pepgrp2trank = None
 
 progress.stage("Min FDR value")
 try:
@@ -433,11 +452,15 @@ if opts.peptidegroups:
     psmcount = pepgrp2psmcount
     psmfdr   = pepgrp2fdr
     minqvalue = minpepgrpqvalue
+    psmrank = pepgrp2rank
+    psmtrank = pepgrp2trank
 else:
     edges = pr2pep
     elements = peptides
     psmcount = pep2psmcount
     psmfdr   = pep2fdr
+    psmrank  = pep2rank
+    psmtrank  = pep2trank
 
 if opts.minspeccount > 1:
     st = len(elements)
@@ -450,6 +473,18 @@ if opts.maxfdr != None:
     elements.difference_update(set(map(itemgetter(0),[t for t in iter(psmfdr.items()) if t[1] > opts.maxfdr])))
     rmed = st-len(elements)
     progress.message("Removed %d peptides with min FDR > %f"%(rmed,opts.maxfdr))
+
+if opts.rank != None:
+    st = len(elements)
+    elements.difference_update(set(map(itemgetter(0),[t for t in iter(psmrank.items()) if t[1] > opts.rank])))
+    rmed = st-len(elements)
+    progress.message("Removed %d peptides with rank > %d"%(rmed,opts.rank))
+
+if opts.tiedrank != None:
+    st = len(elements)
+    elements.difference_update(set(map(itemgetter(0),[t for t in iter(psmtrank.items()) if t[1] > opts.tiedrank])))
+    rmed = st-len(elements)
+    progress.message("Removed %d peptides with tied rank > %d"%(rmed,opts.tiedrank))
 
 def tbcmp(pri,prj):
     tbi = sorted(map(tbpep2fdr.get,pr2tbpep[pri]-pr2tbpep[prj]),key=cmp_to_key(psmfilter.cmp))

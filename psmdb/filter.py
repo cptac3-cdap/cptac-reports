@@ -119,6 +119,16 @@ class EValue(PSMFilter):
     def __init__(self,tight,**kw):
         PSMFilter.__init__(self,'evalue',True,tight,None,**kw)
 
+class Rank(PSMFilter):
+    def __init__(self,tight,**kw):
+        kw['maxrank'] = 1e+20
+        PSMFilter.__init__(self,'rank',True,tight,None,**kw)
+
+class TiedRank(PSMFilter):
+    def __init__(self,tight,**kw):
+        kw['maxrank'] = 1e+20
+        PSMFilter.__init__(self,'trank',True,tight,None,**kw)
+
 class MZIdPassThreshold(PSMFilter):
     def __init__(self,**kw):
         PSMFilter.__init__(self,'passThreshold',True,"true",**kw)

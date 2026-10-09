@@ -120,11 +120,14 @@ for l in sorted(sys.stdin):
             if d.get('Fraction'):
                 fraction = d.get('Fraction')
             else:
-                fracregex = d.get('FractionRegex',r'\_[fF]?([A-Z]|[0-9]+)$')
+                fracregex = d.get('FractionRegex',r'\_[fF]?(?P<fraction>[A-Z]|[0-9]+)$')
                 m = re.search(fracregex,basename)
                 if not m:
                     raise RuntimeError("Can't extract fraction number from basename: %s"%(basename,))
-                fraction = m.group(1)
+                try:
+                    fraction = m.group("fraction")
+                except IndexError:
+                    fraction = m.group(1)
                 try:
                     fraction = str(int(fraction))
                 except ValueError:
