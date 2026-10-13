@@ -69,7 +69,7 @@ for l in sorted(sys.stdin):
             filematched = True
             labellot = d.get('LabelReagent')
             ratios = defaultdict(list)
-            if 'Ratios' in d:
+            if d.get('Ratios',"") != "":
                 for j,(numerator,denominator) in enumerate([tuple(r.split('/')) for r in d.get('Ratios',"").split(',')]):
                     numerator = numerator.strip()
                     denominator = denominator.strip()
